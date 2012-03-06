@@ -1,0 +1,25 @@
+page:
+  singular: page
+  plural: pages
+  fields:
+    title: string
+    uri: string
+    url: string
+    url_on: bool
+    content: longtext
+    sidebar: longtext
+    template:
+      Type: string
+      Default: default
+    slide:
+      Type: string
+      Default: show
+  manyToMany:
+    - media.file
+    
+article:
+  singular: article
+  plural: news
+  fields:
+    title: string
+    content: text
