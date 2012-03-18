@@ -10,7 +10,7 @@ class Page extends Model {
 	
 	public function output() {
 		
-		$array = $this->get_array();
+		$array = $this->__toArray();
 		$array['content'] = e::markdown($array['content']);
 		$array['sidebar'] = e::markdown($array['sidebar']);
 		e::configure('lhtml')->activeAddKey('hook', ':page', $array);
