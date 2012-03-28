@@ -14,9 +14,6 @@ page:
     slide:
       Type: string
       Default: show
-  manyToMany:
-    - media.file
-    
 article:
   singular: article
   plural: news
