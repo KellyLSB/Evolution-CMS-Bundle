@@ -19,9 +19,11 @@ class Page extends Model {
 		
 		if(trim($template) == 'default' && strlen(trim($this->sidebar)) > 2)
 			$template = 'default-sidebar';
-		
-		echo e::$lhtml->file(EvolutionSite.'/configure/templates/'.$template.'.lhtml')->build();
-		
+
+		$locations = array_reverse(e::configure('cms')->activeGet('templates'));
+		foreach($locations as $location) if(is_file($file = $location.'/'.$template.'.lhtml'))
+			{ echo e::$lhtml->file($file)->parse()->build(); break; }
+
 	}
 	
 }
