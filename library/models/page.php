@@ -22,8 +22,9 @@ class Page extends Model {
 
 		$locations = array_reverse(e::configure('cms')->activeGet('templates'));
 		foreach($locations as $location) if(is_file($file = $location.'/'.$template.'.lhtml'))
-			{ echo e::$lhtml->file($file)->parse()->build(); break; }
+			{ $ret = e::$lhtml->file($file)->parse()->build(); break; }
 
+		echo isset($ret) ? $ret : 'No template found for '.$template;
 	}
 	
 }
