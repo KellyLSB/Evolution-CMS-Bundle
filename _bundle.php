@@ -152,8 +152,59 @@ class Bundle extends SQLBundle {
 
 		return $render($return);
 	}
+
+	public function sitemap() {
+		header("Content-Type: application/xml");
+		$return  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		$return .= "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">";
+
+		$domain = ($_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'];
+
+		$pages = $this->getPages();
+		foreach($pages as $page) {
+
+			if($page->hidden) continue;
+
+      		else if($page->url_on
+      			&& (strpos($page->url, 'http://') === 0
+      			|| strpos($page->url, 'https://') === 0)
+      		) continue;
+      		
+      		else if($page->url_on)
+      			$url = substr($page->url, 1);
+      		else
+      			$url = $page->uri;
+
+      		$return .= "<url>";
+
+      		$return .= "<loc>".$domain.'/'.$url."</loc>";
+			$return .= "<lastmod>".date('Y-m-d', strtotime($page->updated_timestamp))."</lastmod>";
+			$return .= "<changefreq>daily</changefreq>";
+			$return .= "<priority>0.5</priority>";
+
+   			$return .= "</url>";
+   		}
+
+		$return .= "</urlset>";
+
+		echo trim($return);
+		die;
+	}
+
+	public function robots() {
+		header("Content-Type: text/plain");
+		$domain = ($_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'];
+		echo <<<_
+User-agent: *
+Sitemap: $domain/sitemap.xml
+_;
+		die;
+	}
 	
 	public function route($path, $dir, $index = false) {
+		if($path[0] === 'sitemap.xml') $this->sitemap();
+		if($path[0] === 'robots.txt') $this->robots();
+
 		/**
 		 * Set Index Page
 		 */
