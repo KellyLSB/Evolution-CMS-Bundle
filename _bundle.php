@@ -26,6 +26,12 @@ class Bundle extends SQLBundle {
 
 	public function exception($path, $dirs, $exception) {
 		$search = 'special-' . ($exception instanceof NotFoundException ? 'notfound' : 'exception');
+
+		if($exception instanceof NotFoundException) 
+			header('HTTP/1.1 404 Not Found');
+		else
+			header('HTTP/1.1 500 Internal Error');
+		
 		$this->route(array($search), $dirs);
 	}
 
