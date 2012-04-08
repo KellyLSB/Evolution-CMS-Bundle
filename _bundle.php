@@ -1,6 +1,7 @@
 <?php
 
 namespace Bundles\CMS;
+use Bundles\Router\NotFoundException;
 use Bundles\SQL\SQLBundle;
 use Exception;
 use e;
@@ -16,7 +17,16 @@ class Bundle extends SQLBundle {
 	}
 
 	public function _on_portal_exception($path, $dir, $exception) {
-		$this->route(array('special-exception'), array($dir));
+		$this->exception($path, array($dir), $exception);
+	}
+	
+	public function _on_router_exception($path, $exception) {
+		$this->exception($path, array(e\site), $exception);
+	}
+
+	public function exception($path, $dirs, $exception) {
+		$search = 'special-' . ($exception instanceof NotFoundException ? 'notfound' : 'exception');
+		$this->route(array($search), $dirs);
 	}
 
 	public function page_structure($depth = 2, $html = false) {
