@@ -179,7 +179,7 @@ class Bundle extends SQLBundle {
 		$pages = $this->getPages();
 		foreach($pages as $page) {
 
-      		else if($page->url_on
+      		if($page->url_on
       			&& (strpos($page->url, 'http://') === 0
       			|| strpos($page->url, 'https://') === 0)
       		) continue;
