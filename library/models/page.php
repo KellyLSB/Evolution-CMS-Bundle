@@ -10,20 +10,18 @@ class Page extends Model {
 	
 	public function output() {
 		
+		/**
+		 * Get content for the page and source it
+		 */
 		$array = $this->__toArray();
 		$array['content'] = e::markdown($array['content']);
 		$array['sidebar'] = e::markdown($array['sidebar']);
 		e::configure('lhtml')->activeAddKey('hook', ':page', $array);
 		
-		$template = $this->template;
-		
-		if(trim($template) == 'default' && strlen(trim($this->sidebar)) > 2)
-			$template = 'default-sidebar';
+		// Get the template source code fully rendered
+		$ret = e::$cms->returnTemplateCode($this->template, $array);
 
-		$locations = array_reverse(e::configure('cms')->activeGet('templates'));
-		foreach($locations as $location) if(is_file($file = $location.'/'.$template.'.lhtml'))
-			{ $ret = e::$lhtml->file($file)->parse()->build(); break; }
-
+		// Output page to browser
 		echo isset($ret) ? $ret : 'No template found for '.$template;
 	}
 	

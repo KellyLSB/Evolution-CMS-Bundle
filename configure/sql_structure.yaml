@@ -22,3 +22,9 @@ article:
   fields:
     title: string
     content: text
+template:
+  singular: template
+  plural: templates
+  fields:
+    slug: string
+    content: text

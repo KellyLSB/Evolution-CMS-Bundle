@@ -2,6 +2,7 @@
 
 namespace Bundles\CMS;
 use Bundles\Router\NotFoundException;
+use Bundles\SQL\callException;
 use Bundles\SQL\SQLBundle;
 use Exception;
 use e;
@@ -239,6 +240,66 @@ _;
 			$this->route($path, $dir, true);
 		}
 		
+	}
+
+	/**
+	 * Return the Rendered HTML Source based on template name
+	 * @author Kelly Becker
+	 * @since July 16th 2012
+	 */
+	public function returnTemplateCode($template = 'default', $array = array()) {
+
+		/**
+		 * Default template type to a page
+		 */
+		if(strpos($template, '/') === false)
+			$template = 'pages/'.$template;
+		
+		/**
+		 * if the page template has a sidebar and was using default change it to default-sidebar
+		 */
+		if(trim($template) == 'pages/default' && strlen(trim($array['sidebar'])) > 2)
+			$template = 'pages/default-sidebar';
+
+		// Load the template object from the database
+		$templateObj = e::$cms->getTemplate($template);
+
+		/**
+		 * If we dont have a template object use the file system ones
+		 */
+		if(empty($templateObj)) {
+			$locations = array_reverse(e::configure('cms')->templates);
+
+			/**
+			 * Loop through the locations until we have a match and build it
+			 */
+			foreach($locations as $location) if(is_file($file = $location.'/'.$template.'.lhtml')) {
+				$stack = e::$lhtml->file($file)->parse();
+				$stack->_ready();
+				$ret = $stack->build();
+				break;
+			}
+		}
+
+		/**
+		 * If we did have a template object build the page using the template object
+		 */
+		else {
+			$stack = e::$lhtml->string($templateObj->content)->parse();
+			$stack->_ready();
+			$ret = $stack->build();
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Template file slug accessor
+	 * @author Kelly Becker
+	 * @since July 16th 2012
+	 */
+	public function __callExtend($func, $args, $run = 0) {
+		return $this->__slugSupport($func, $args);
 	}
 	
 }
